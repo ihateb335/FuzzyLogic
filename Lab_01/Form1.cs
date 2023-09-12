@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 
-namespace FuzzyLogic
+namespace Lab_01
 {
     public partial class Form1 : Form
     {
@@ -57,21 +57,10 @@ namespace FuzzyLogic
 
             // Створюємо масиви відповідних розмірів.
             x = new double[10].Select((x,i) => i * 5.0).ToArray();
-            y = new double[10];
+            y = new double[] { 0, 0.25, 0.5, 0.75, 1, 1, 0.75, 0.5, 0.25, 0};
             y2 = new double[10];
             ylogy = new double[10];
-            // Розраховуємо крапки для графіків функції.
-            y[0] = 0;
-            y[1] = 0.25;
-            y[2] = 0.5;
-            y[3] = 0.75;
-            y[4] = 1;
-            y[5] = 1;
-            y[6] = 0.75;
-            y[7] = 0.5;
-            y[8] = 0.25;
-            y[9] = 0;
-            
+
 
             for (int i = 0; i < 10; i++)
             {
@@ -81,6 +70,13 @@ namespace FuzzyLogic
             }
         }
 
+        /// <summary>
+        /// Створити серію та додати її до карти
+        /// </summary>
+        /// <param name="SeriesName">Назва серії</param>
+        /// <param name="values">Значення</param>
+        /// <param name="MarkerStyle">Стиль маркеру</param>
+        /// <param name="MarkerColor">Колір маркеру</param>
         private void AddSeries(string SeriesName, double[] values, MarkerStyle MarkerStyle, Color MarkerColor )
         {
             // Створюємо об'єкт для графіка.

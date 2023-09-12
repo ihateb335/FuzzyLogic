@@ -1,4 +1,4 @@
-﻿namespace FuzzyLogic
+﻿namespace Lab_01
 {
     partial class Form1
     {
