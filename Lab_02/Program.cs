@@ -36,14 +36,60 @@ namespace Lab_02
             }
         }
 
+        static void PrintResult(double[,] Q, string[] labelsX, string[] labelsY, string description)
+        {
+            int T_Rows = Q.GetUpperBound(0) + 1;
+            int T_Columns = Q.Length / T_Rows;
+
+            if (T_Rows != labelsY.Length) throw new ArgumentException($"{labelsY.Length} != {T_Rows}");
+            if (T_Columns != labelsX.Length) throw new ArgumentException($"{labelsX.Length} != {T_Columns}");
+
+            Console.WriteLine(description);
+            Console.WriteLine(labelsX.Aggregate("\t", (prev, next) => $"{prev}\t{next}"));
+            
+
+            var maxes = new double[T_Columns];
+            for (int j = 0; j < T_Columns ; j++)
+            {
+                var max = 0.0;
+                for (int i = 0; i < T_Rows; i++)
+                {
+                    max = Math.Max(max, Q[i, j]);
+                }
+                maxes[j] = max;
+            }
+
+            var lists = new List<string>[T_Columns];
+            for (int j = 0; j < T_Columns; j++)
+            {
+                lists[j] = new List<string>();
+                for (int i = 0; i < T_Rows; i++)
+                {
+                    if (Q[i, j] == maxes[j]) lists[j].Add(labelsY[i]);
+                }
+            }
+
+
+            for (int i = 0; i < T_Rows; i++)
+            {
+                Console.Write($"{i + 1}а професiя:\t");
+                for (int j = 0; j < T_Columns; j++)
+                {
+                    if (i < lists[j].Count) Console.Write(lists[j][i] + "\t");
+                    else Console.Write("-\t\t");
+                }
+                Console.WriteLine();
+            }
+        }
+
+
         /// <summary>
-        /// Обчислюємо матрицю композиції.
+        /// Обчислюємо матрицю композиції методом MinMax.
         /// </summary>
         /// <returns>Нечітке відношення Q рекомендацій кандидатом відповідних спеціальностей.</returns>
         /// <param name="S">Перша матриця нечітких відносин.</param>
         /// <param name="T">Друга матриця нечітких відносин.</param>
-        /// <param name="Q">Результуюча матриця процесу максимінної згортки.</param>
-        static double[,] CalculateQ(double[,] S, double[,] T)
+        static double[,] CalculateMinMax(double[,] S, double[,] T)
         {
             // T_Rows = S_Columns, S_Rows = T_Columns.
             int T_Rows = T.GetUpperBound(0) + 1;
@@ -76,12 +122,42 @@ namespace Lab_02
 
             return Q;
         }
+        /// <summary>
+        /// Обчислюємо матрицю композиції методом MaxProd.
+        /// </summary>
+        /// <returns>Нечітке відношення Q рекомендацій кандидатом відповідних спеціальностей.</returns>
+        /// <param name="S">Перша матриця нечітких відносин.</param>
+        /// <param name="T">Друга матриця нечітких відносин.</param>
+        static double[,] CalculateMaxProd(double[,] S, double[,] T)
+        {
+            // T_Rows = S_Columns, S_Rows = T_Columns.
+            int T_Rows = T.GetUpperBound(0) + 1;
+            int T_Columns = T.Length / T_Rows;
+            int S_Rows = S.GetUpperBound(0) + 1;
+            int S_Columns = S.Length / S_Rows;
+
+            double[,] Q = new double[S_Rows, T_Columns];
+            for (int i = 0; i < S_Rows; i++)
+            {
+                for (int j = 0; j < T_Columns; j++)
+                {
+                    double max = double.MinValue;
+                    for (int k = 0; k < S_Columns; k++)
+                    {
+                        max = Math.Max(S[i, k] * T[k, j], max);
+                    }
+                    Q[i, j] = max;
+                }
+            }
+
+            return Q;
+        }
 
 
         static void Main(string[] args)
         {
-
             const string SEPARATOR = "\t\t\t----------------------------------------------";
+
             const double VARIANT = 0.04;
 
             /// <summary>
@@ -114,7 +190,7 @@ namespace Lab_02
             };
 
             // Викликаємо метод обчислення матриці композиції.
-            var Q = CalculateQ(S, T);
+            var Q = CalculateMinMax(S, T);
 
             string[] professions = { "Менеджер", "Програмiст", "Водiй\t", "Секретар", "Перекладач" };
             string[] candidates = { "Петренко", "Iваненко", "Сидоренко", "Василенко", "Григоренко " };
@@ -125,7 +201,16 @@ namespace Lab_02
             PrintMatrix(T, candidates, qualities, "Нечiтке вiдношення T-профiлювання кандидатiв на навчання:");
             Console.WriteLine(SEPARATOR);
             // Викликаємо метод виведення матриці композиції.
-            PrintMatrix(Q, candidates, professions, "Матриця Q - це бiнарна композиця матриць S i T. Висновок матрицi Q:");
+            PrintMatrix(Q, candidates, professions, "Матриця Q - це бiнарна композиця матриць S i T за допомогою методу min-max. Висновок матрицi Q:");
+            Console.WriteLine(SEPARATOR);
+            PrintResult(Q, candidates, professions, "Результати:");
+
+            Q = CalculateMaxProd(S, T);
+            Console.WriteLine(SEPARATOR);
+            // Викликаємо метод виведення матриці композиції.
+            PrintMatrix(Q, candidates, professions, "Матриця Q - це бiнарна композиця матриць S i T за допомогою методу max-prod. Висновок матрицi Q:");
+            Console.WriteLine(SEPARATOR);
+            PrintResult(Q, candidates, professions, "Результати:");
         }
     }
 }
