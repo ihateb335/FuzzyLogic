@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using FuzzyLib;
+
 namespace Lab_03
 {
     class Program

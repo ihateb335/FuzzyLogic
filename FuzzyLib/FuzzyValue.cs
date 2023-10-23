@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lab_03
+namespace FuzzyLib
 {
-    public class FuzzyValue
+    public class FuzzyValue : IComparable<FuzzyValue>
     {
 
         public FuzzyValue() { Value = 0; Description = ""; }
@@ -25,14 +25,20 @@ namespace Lab_03
 
         public string Description { get; set; }
 
-        public static FuzzyValue operator &(FuzzyValue A, FuzzyValue B) => new FuzzyValue(Math.Min(A.Value, B.Value), "");
-        public static FuzzyValue operator |(FuzzyValue A, FuzzyValue B) => new FuzzyValue(Math.Max(A.Value, B.Value), "");
-        public static FuzzyValue operator !(FuzzyValue A) => new FuzzyValue(1.0 - A.Value, "");
+        public static FuzzyValue operator &(FuzzyValue A, FuzzyValue B) => new FuzzyValue(Math.Min(A.Value, B.Value), AndComparison(A, B));
+        public static FuzzyValue operator |(FuzzyValue A, FuzzyValue B) => new FuzzyValue(Math.Max(A.Value, B.Value), OrComparison(A, B));
+        public static FuzzyValue operator !(FuzzyValue A) => new FuzzyValue(1.0 - A.Value, NotComparison(A) );
+
+        public static Func<FuzzyValue, FuzzyValue, string> AndComparison = (A, B) => "";
+        public static Func<FuzzyValue, FuzzyValue, string> OrComparison = (A, B) => "";
+        public static Func<FuzzyValue, string> NotComparison = A => "";
+
 
         public override string ToString()
         {
             return $"Value: {Value, 2:F2}; Description: {Description}";
         }
 
+        public int CompareTo(FuzzyValue other) => Value.CompareTo(other.Value);
     }
 }
